@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "author": "HELIOS v2.4",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+
+    { "type": "wokwi-potentiometer", "id": "pot1", "top": -310, "left": -360, "attrs": { "value": "2048" } },
+    { "type": "wokwi-potentiometer", "id": "pot2", "top": -310, "left": -130, "attrs": { "value": "2048" } },
+    { "type": "wokwi-potentiometer", "id": "pot3", "top": -100, "left": -360, "attrs": { "value": "2048" } },
+    { "type": "wokwi-potentiometer", "id": "pot4", "top": -100, "left": -130, "attrs": { "value": "2048" } },
+    { "type": "wokwi-potentiometer", "id": "pot5", "top": 200, "left": -240, "attrs": { "value": "2048" } },
+
+    { "type": "wokwi-servo", "id": "servoAz", "top": -180, "left": 320, "attrs": {} },
+    { "type": "wokwi-servo", "id": "servoEl", "top": 80,   "left": 320, "attrs": {} },
+
+    { "type": "wokwi-led", "id": "led1", "top": 320, "left": 240, "attrs": { "color": "yellow" } },
+    { "type": "wokwi-resistor", "id": "r1", "top": 330, "left": 130, "attrs": { "value": "220" } },
+
+    { "type": "wokwi-text", "id": "txt1", "top": -360, "left": -360, "attrs": { "text": "LDR Top-Left  (GPIO34)" } },
+    { "type": "wokwi-text", "id": "txt2", "top": -360, "left": -130, "attrs": { "text": "LDR Top-Right (GPIO35)" } },
+    { "type": "wokwi-text", "id": "txt3", "top": -150, "left": -360, "attrs": { "text": "LDR Bot-Left  (GPIO32)" } },
+    { "type": "wokwi-text", "id": "txt4", "top": -150, "left": -130, "attrs": { "text": "LDR Bot-Right (GPIO33)" } },
+    { "type": "wokwi-text", "id": "txt5", "top": 160,  "left": -240, "attrs": { "text": "Solar Voltage (GPIO36)" } },
+    { "type": "wokwi-text", "id": "txt6", "top": -210, "left": 320,  "attrs": { "text": "Servo Azimuth (GPIO25)" } },
+    { "type": "wokwi-text", "id": "txt7", "top": 50,   "left": 320,  "attrs": { "text": "Servo Elevation (GPIO26)" } },
+    { "type": "wokwi-text", "id": "txt8", "top": 290,  "left": 240,  "attrs": { "text": "Power LED (GPIO27)" } }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+
+    [ "pot1:VCC", "esp:3V3",   "red",    [] ],
+    [ "pot1:GND", "esp:GND.1", "black",  [] ],
+    [ "pot1:SIG", "esp:D34",   "green",  [] ],
+
+    [ "pot2:VCC", "esp:3V3",   "red",    [] ],
+    [ "pot2:GND", "esp:GND.2", "black",  [] ],
+    [ "pot2:SIG", "esp:D35",   "green",  [] ],
+
+    [ "pot3:VCC", "esp:3V3",   "red",    [] ],
+    [ "pot3:GND", "esp:GND.1", "black",  [] ],
+    [ "pot3:SIG", "esp:D32",   "green",  [] ],
+
+    [ "pot4:VCC", "esp:3V3",   "red",    [] ],
+    [ "pot4:GND", "esp:GND.2", "black",  [] ],
+    [ "pot4:SIG", "esp:D33", "green", [] ],
+
+    [ "pot5:VCC", "esp:3V3",   "red",    [] ],
+    [ "pot5:GND", "esp:GND.1", "black",  [] ],
+    [ "pot5:SIG", "esp:D36",   "orange", [] ],
+
+    [ "servoAz:GND", "esp:GND.2", "black",  [] ],
+    [ "servoAz:V+",  "esp:VIN",   "red",    [] ],
+    [ "servoAz:PWM", "esp:D25",   "purple", [] ],
+
+    [ "servoEl:GND", "esp:GND.2", "black",  [] ],
+    [ "servoEl:V+",  "esp:VIN",   "red",    [] ],
+    [ "servoEl:PWM", "esp:D26",   "purple", [] ],
+
+    [ "esp:D27", "r1:1",     "yellow", [] ],
+    [ "r1:2",    "led1:A",   "yellow", [] ],
+    [ "led1:C",  "esp:GND.1", "black",  [] ]
+  ],
+  "dependencies": {}
+}

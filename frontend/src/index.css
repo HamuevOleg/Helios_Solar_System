@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root { height: 100%; }
+  body { font-family: 'Inter', system-ui, sans-serif; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* Range slider — даём accent-цвет везде где удастся */
+  input[type='range'] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+  input[type='range']::-webkit-slider-runnable-track {
+    background: #1e293b;
+    height: 4px;
+    border-radius: 9999px;
+  }
+  input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    margin-top: -6px;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #fb923c;
+    box-shadow: 0 0 0 4px rgba(251, 146, 60, 0.18);
+  }
+  input[type='range']::-moz-range-track {
+    background: #1e293b;
+    height: 4px;
+    border-radius: 9999px;
+  }
+  input[type='range']::-moz-range-thumb {
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #fb923c;
+    border: none;
+    box-shadow: 0 0 0 4px rgba(251, 146, 60, 0.18);
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+}

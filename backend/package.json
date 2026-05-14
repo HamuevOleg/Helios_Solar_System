@@ -1,0 +1,20 @@
+{
+  "name": "helios-backend",
+  "version": "1.0.0",
+  "description": "HELIOS v2.4 — MQTT bridge between Wokwi ESP32 and React dashboard",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "start": "bun run src/index.ts"
+  },
+  "dependencies": {
+    "elysia": "^1.1.0",
+    "@elysiajs/cors": "^1.1.0",
+    "mqtt": "^5.10.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "@types/bun": "latest"
+  }
+}

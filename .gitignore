@@ -1,0 +1,31 @@
+# Node / Bun
+node_modules/
+bun.lockb
+*.log
+
+# Build outputs
+dist/
+build/
+.vite/
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Original Wokwi zip — оставляем только распакованные исходники
+project.zip
+
+# Claude Code workspace
+.claude/
+
+# Wokwi / arduino build artifacts (если кто-то соберёт прошивку локально)
+serial.log
+*.bin
+*.elf

@@ -1,0 +1,15 @@
+{
+  "name": "helios-v2.4",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HELIOS v2.4 — двухосевой солнечный трекер с веб-дашбордом (firmware + backend + frontend)",
+  "scripts": {
+    "install:all": "bun install && (cd backend && bun install) && (cd frontend && bun install)",
+    "dev:backend":  "cd backend && bun run dev",
+    "dev:frontend": "cd frontend && bun run dev",
+    "dev": "concurrently -n bk,fe -c yellow,cyan \"bun run dev:backend\" \"bun run dev:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}
