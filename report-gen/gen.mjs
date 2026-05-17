@@ -4,8 +4,12 @@ import {
   Table, TableRow, TableCell, WidthType, BorderStyle, ShadingType,
   PageBreak, Header, Footer, PageNumber, LevelFormat, convertInchesToTwip,
   HorizontalPositionRelativeFrom, HorizontalPositionAlign,
-  TableOfContents,
+  TableOfContents, TableLayoutType,
 } from 'docx';
+
+/* Useable page width in twips: A4 11906 − left margin 1.2"(1728) − right margin 0.8"(1152) = 9026 */
+const PAGE_TWIPS = 9000;
+const pctToDxa = (pct) => Math.round((PAGE_TWIPS * pct) / 100);
 import { writeFile } from 'node:fs/promises';
 
 /* ── Palette ────────────────────────────────────────────────── */
@@ -72,7 +76,7 @@ function codeBlock(code, lang = '') {
   const lines = code.replace(/\t/g, '  ').split('\n');
   const rows = lines.map((ln) => new TableRow({
     children: [new TableCell({
-      width: { size: 100, type: WidthType.PERCENTAGE },
+      width: { size: PAGE_TWIPS, type: WidthType.DXA },
       shading: { type: ShadingType.CLEAR, fill: C.panel },
       borders: {
         top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
@@ -88,11 +92,13 @@ function codeBlock(code, lang = '') {
     })],
   }));
   return new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
+    width: { size: PAGE_TWIPS, type: WidthType.DXA },
+    columnWidths: [PAGE_TWIPS],
+    layout: TableLayoutType.FIXED,
     rows: [
       new TableRow({
         children: [new TableCell({
-          width: { size: 100, type: WidthType.PERCENTAGE },
+          width: { size: PAGE_TWIPS, type: WidthType.DXA },
           shading: { type: ShadingType.CLEAR, fill: C.thHdr },
           borders: blankBorder(),
           margins: { top: 60, bottom: 60, left: 200, right: 200 },
@@ -129,10 +135,16 @@ function makeTable({ headers, rows, widths }) {
     insideHorizontal: { style: BorderStyle.SINGLE, size: 4, color: C.rule },
     insideVertical:   { style: BorderStyle.SINGLE, size: 4, color: C.rule },
   };
+  // Compute column widths in DXA from a percent array (or equal split if absent).
+  const colPct = widths && widths.length === headers.length
+    ? widths
+    : headers.map(() => 100 / headers.length);
+  const colDxa = colPct.map(pctToDxa);
+
   const hdrRow = new TableRow({
     tableHeader: true,
-    children: headers.map((h) => new TableCell({
-      width: { size: widths?.[headers.indexOf(h)] ?? 100 / headers.length, type: WidthType.PERCENTAGE },
+    children: headers.map((h, i) => new TableCell({
+      width: { size: colDxa[i], type: WidthType.DXA },
       shading: { type: ShadingType.CLEAR, fill: C.thHdr },
       margins: { top: 100, bottom: 100, left: 140, right: 140 },
       children: [new Paragraph({
@@ -144,7 +156,7 @@ function makeTable({ headers, rows, widths }) {
   });
   const bodyRows = rows.map((row, idx) => new TableRow({
     children: row.map((cell, ci) => new TableCell({
-      width: { size: widths?.[ci] ?? 100 / headers.length, type: WidthType.PERCENTAGE },
+      width: { size: colDxa[ci], type: WidthType.DXA },
       shading: idx % 2 === 1 ? { type: ShadingType.CLEAR, fill: C.thAlt } : undefined,
       margins: { top: 80, bottom: 80, left: 140, right: 140 },
       children: cell.split('\n').map((line) => new Paragraph({
@@ -155,7 +167,9 @@ function makeTable({ headers, rows, widths }) {
     })),
   }));
   return new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
+    width: { size: PAGE_TWIPS, type: WidthType.DXA },
+    columnWidths: colDxa,
+    layout: TableLayoutType.FIXED,
     borders,
     rows: [hdrRow, ...bodyRows],
   });

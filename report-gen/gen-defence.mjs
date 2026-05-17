@@ -4,8 +4,11 @@ import {
   Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType,
   Table, TableRow, TableCell, WidthType, BorderStyle, ShadingType,
   PageBreak, Header, Footer, PageNumber, convertInchesToTwip,
-  TableOfContents, ExternalHyperlink,
+  TableOfContents, ExternalHyperlink, TableLayoutType,
 } from 'docx';
+
+const PAGE_TWIPS = 9000; // useable width on A4 with 1.2" + 0.8" side margins
+const pctToDxa = (pct) => Math.round((PAGE_TWIPS * pct) / 100);
 import { writeFile } from 'node:fs/promises';
 
 const C = {
@@ -85,7 +88,7 @@ function codeBlock(code, lang = '') {
   const lines = code.replace(/\t/g, '  ').split('\n');
   const rows = lines.map((ln) => new TableRow({
     children: [new TableCell({
-      width: { size: 100, type: WidthType.PERCENTAGE },
+      width: { size: PAGE_TWIPS, type: WidthType.DXA },
       shading: { type: ShadingType.CLEAR, fill: C.panel },
       borders: {
         top: { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' },
@@ -101,11 +104,13 @@ function codeBlock(code, lang = '') {
     })],
   }));
   return new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
+    width: { size: PAGE_TWIPS, type: WidthType.DXA },
+    columnWidths: [PAGE_TWIPS],
+    layout: TableLayoutType.FIXED,
     rows: [
       new TableRow({
         children: [new TableCell({
-          width: { size: 100, type: WidthType.PERCENTAGE },
+          width: { size: PAGE_TWIPS, type: WidthType.DXA },
           shading: { type: ShadingType.CLEAR, fill: C.thHdr },
           borders: blankBorder(),
           margins: { top: 60, bottom: 60, left: 200, right: 200 },
@@ -136,10 +141,15 @@ function makeTable({ headers, rows, widths }) {
     insideHorizontal: { style: BorderStyle.SINGLE, size: 4, color: C.rule },
     insideVertical:   { style: BorderStyle.SINGLE, size: 4, color: C.rule },
   };
+  const colPct = widths && widths.length === headers.length
+    ? widths
+    : headers.map(() => 100 / headers.length);
+  const colDxa = colPct.map(pctToDxa);
+
   const hdrRow = new TableRow({
     tableHeader: true,
     children: headers.map((h, i) => new TableCell({
-      width: { size: widths?.[i] ?? 100 / headers.length, type: WidthType.PERCENTAGE },
+      width: { size: colDxa[i], type: WidthType.DXA },
       shading: { type: ShadingType.CLEAR, fill: C.thHdr },
       margins: { top: 100, bottom: 100, left: 140, right: 140 },
       children: [new Paragraph({
@@ -151,14 +161,13 @@ function makeTable({ headers, rows, widths }) {
   });
   const bodyRows = rows.map((row, idx) => new TableRow({
     children: row.map((cell, ci) => new TableCell({
-      width: { size: widths?.[ci] ?? 100 / headers.length, type: WidthType.PERCENTAGE },
+      width: { size: colDxa[ci], type: WidthType.DXA },
       shading: idx % 2 === 1 ? { type: ShadingType.CLEAR, fill: C.thAlt } : undefined,
       margins: { top: 80, bottom: 80, left: 140, right: 140 },
       children: cell.split('\n').map((line) => new Paragraph({
         alignment: AlignmentType.LEFT,
         spacing: { line: 280, before: 0, after: 0 },
         children: [
-          // monospace for code-looking cells (start with > or contain ::)
           /^(GPIO|D\d|pin|\w+\.\w+|\/|TOPIC)/.test(line)
             ? new TextRun({ text: line, font: MONO, size: 20, color: C.ink })
             : new TextRun({ text: line, font: FONT, size: 22, color: C.ink }),
@@ -167,7 +176,9 @@ function makeTable({ headers, rows, widths }) {
     })),
   }));
   return new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
+    width: { size: PAGE_TWIPS, type: WidthType.DXA },
+    columnWidths: colDxa,
+    layout: TableLayoutType.FIXED,
     borders,
     rows: [hdrRow, ...bodyRows],
   });
