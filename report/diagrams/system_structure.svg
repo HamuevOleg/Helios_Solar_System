@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" font-family="'Inter','Segoe UI',Helvetica,Arial,sans-serif">
+  <defs>
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="0" dy="2"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.08"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#52525b"/>
+    </marker>
+    <marker id="arrow-mute" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#a1a1aa"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="760" fill="#fbfbfb"/>
+
+  <text x="600" y="56" text-anchor="middle" font-size="24" font-weight="700" fill="#18181b" letter-spacing="-0.02em">
+    Структурная схема системы HELIOS
+  </text>
+  <text x="600" y="80" text-anchor="middle" font-size="12" fill="#71717a">
+    ESP32 трекер · MQTT-брокер · Bun-мост · React-дашборд
+  </text>
+
+  <!-- HARDWARE -->
+  <g transform="translate(40,150)">
+    <text x="0" y="-12" font-size="10" font-weight="700" fill="#ea580c" letter-spacing="0.08em">HARDWARE</text>
+    <rect x="0" y="0" width="320" height="230" rx="10" fill="#ffffff" stroke="#e4e4e7" stroke-width="1" filter="url(#card-shadow)"/>
+    <rect x="0" y="0" width="320" height="3" rx="1.5" fill="#ea580c"/>
+    <text x="20" y="36" font-size="15" font-weight="700" fill="#18181b">ESP32 (Wokwi)</text>
+    <text x="20" y="56" font-size="11" fill="#71717a">DevKit-C v4 · Arduino C++ · ~670 строк</text>
+    <line x1="20" y1="74" x2="300" y2="74" stroke="#f4f4f5"/>
+    <text x="20" y="100" font-size="11.5" fill="#27272a">·  4 × LDR-датчика на ADC (12-bit)</text>
+    <text x="20" y="124" font-size="11.5" fill="#27272a">·  2 × сервопривода (азимут, элевация)</text>
+    <text x="20" y="148" font-size="11.5" fill="#27272a">·  LED индикатор «качества автотрекинга»</text>
+    <text x="20" y="172" font-size="11.5" fill="#27272a">·  Wi-Fi STA · PubSubClient</text>
+    <text x="20" y="208" font-size="10.5" fill="#a1a1aa" font-style="italic">размер 4/4 · цикл 50 мс · телеметрия 500 мс</text>
+  </g>
+
+  <!-- TRANSPORT -->
+  <g transform="translate(440,150)">
+    <text x="0" y="-12" font-size="10" font-weight="700" fill="#7c3aed" letter-spacing="0.08em">ТРАНСПОРТ</text>
+    <rect x="0" y="0" width="320" height="230" rx="10" fill="#ffffff" stroke="#e4e4e7" stroke-width="1" filter="url(#card-shadow)"/>
+    <rect x="0" y="0" width="320" height="3" rx="1.5" fill="#7c3aed"/>
+    <text x="20" y="36" font-size="15" font-weight="700" fill="#18181b">MQTT-брокер</text>
+    <text x="20" y="56" font-size="11" fill="#71717a">broker.hivemq.com : 1883 · QoS 0</text>
+    <line x1="20" y1="74" x2="300" y2="74" stroke="#f4f4f5"/>
+    <text x="20" y="100" font-size="11" fill="#52525b" font-weight="600">Топики:</text>
+    <text x="20" y="122" font-size="11" fill="#27272a" font-family="'JetBrains Mono','Consolas',monospace">helios/&lt;id&gt;/telemetry</text>
+    <text x="20" y="142" font-size="11" fill="#27272a" font-family="'JetBrains Mono','Consolas',monospace">helios/&lt;id&gt;/status   <tspan fill="#a1a1aa">(retained, LWT)</tspan></text>
+    <text x="20" y="162" font-size="11" fill="#27272a" font-family="'JetBrains Mono','Consolas',monospace">helios/&lt;id&gt;/control</text>
+    <text x="20" y="210" font-size="10.5" fill="#a1a1aa" font-style="italic">device id = helios-001</text>
+  </g>
+
+  <!-- BACKEND -->
+  <g transform="translate(840,150)">
+    <text x="0" y="-12" font-size="10" font-weight="700" fill="#059669" letter-spacing="0.08em">BACKEND</text>
+    <rect x="0" y="0" width="320" height="230" rx="10" fill="#ffffff" stroke="#e4e4e7" stroke-width="1" filter="url(#card-shadow)"/>
+    <rect x="0" y="0" width="320" height="3" rx="1.5" fill="#059669"/>
+    <text x="20" y="36" font-size="15" font-weight="700" fill="#18181b">Bun + Elysia мост</text>
+    <text x="20" y="56" font-size="11" fill="#71717a">TypeScript · ~250 строк · :8787</text>
+    <line x1="20" y1="74" x2="300" y2="74" stroke="#f4f4f5"/>
+    <text x="20" y="100" font-size="11.5" fill="#27272a">·  HTTP API: /health · /api/snapshot</text>
+    <text x="20" y="124" font-size="11.5" fill="#27272a">·  WebSocket /ws (двусторонний)</text>
+    <text x="20" y="148" font-size="11.5" fill="#27272a">·  MQTT → WS broadcast (telemetry/status)</text>
+    <text x="20" y="172" font-size="11.5" fill="#27272a">·  WS → MQTT (control commands)</text>
+    <text x="20" y="208" font-size="10.5" fill="#a1a1aa" font-style="italic">в Docker: статика фронта на :8787 тоже</text>
+  </g>
+
+  <!-- FRONTEND -->
+  <g transform="translate(240,500)">
+    <text x="0" y="-12" font-size="10" font-weight="700" fill="#2563eb" letter-spacing="0.08em">FRONTEND</text>
+    <rect x="0" y="0" width="720" height="200" rx="10" fill="#ffffff" stroke="#e4e4e7" stroke-width="1" filter="url(#card-shadow)"/>
+    <rect x="0" y="0" width="720" height="3" rx="1.5" fill="#2563eb"/>
+    <text x="20" y="36" font-size="15" font-weight="700" fill="#18181b">React 18 · Vite · Tailwind</text>
+    <text x="20" y="56" font-size="11" fill="#71717a">браузер · http://localhost:8787 (prod) или :5173 (dev)</text>
+    <line x1="20" y1="74" x2="700" y2="74" stroke="#f4f4f5"/>
+    <text x="20"  y="102" font-size="11.5" fill="#27272a">·  3D-визуализация трекера через react-three-fiber (Three.js)</text>
+    <text x="20"  y="126" font-size="11.5" fill="#27272a">·  Графики LDR и Power Output через Recharts (история 120 кадров)</text>
+    <text x="20"  y="150" font-size="11.5" fill="#27272a">·  Sensor cards · ΔV/ΔH · panel voltage · LED brightness</text>
+    <text x="20"  y="174" font-size="11.5" fill="#27272a">·  Control Panel: AUTO/MANUAL/PARKED · слайдеры az/el · deadzone</text>
+  </g>
+
+  <!-- ARROWS -->
+  <!-- HW → MQTT -->
+  <line x1="364" y1="225" x2="436" y2="225" stroke="#52525b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="400" y="216" text-anchor="middle" font-size="10" font-style="italic" fill="#52525b">publish</text>
+  <text x="400" y="244" text-anchor="middle" font-size="10" fill="#a1a1aa" font-family="'JetBrains Mono','Consolas',monospace">telemetry · status</text>
+  <!-- MQTT → HW (return) -->
+  <line x1="436" y1="290" x2="364" y2="290" stroke="#a1a1aa" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrow-mute)"/>
+  <text x="400" y="307" text-anchor="middle" font-size="10" font-style="italic" fill="#a1a1aa">subscribe control</text>
+  <text x="400" y="333" text-anchor="middle" font-size="10" font-style="italic" fill="#a1a1aa">WiFi · Wokwi-GUEST</text>
+
+  <!-- MQTT → Backend -->
+  <line x1="764" y1="225" x2="836" y2="225" stroke="#52525b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="800" y="216" text-anchor="middle" font-size="10" font-style="italic" fill="#52525b">subscribe</text>
+  <text x="800" y="244" text-anchor="middle" font-size="10" fill="#a1a1aa" font-family="'JetBrains Mono','Consolas',monospace">telemetry · status</text>
+  <line x1="836" y1="290" x2="764" y2="290" stroke="#a1a1aa" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrow-mute)"/>
+  <text x="800" y="307" text-anchor="middle" font-size="10" font-style="italic" fill="#a1a1aa">publish control</text>
+
+  <!-- Backend ↔ Frontend -->
+  <path d="M 900,386 Q 900,440 800,500" fill="none" stroke="#52525b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M 880,500 Q 980,440 980,386" fill="none" stroke="#a1a1aa" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrow-mute)"/>
+  <text x="1010" y="440" font-size="10.5" font-weight="500" fill="#52525b">WebSocket /ws</text>
+  <text x="1010" y="456" font-size="10" font-style="italic" fill="#a1a1aa">JSON snapshot+events</text>
+  <text x="780" y="440" font-size="10" font-weight="500" text-anchor="end" fill="#52525b" font-family="'JetBrains Mono','Consolas',monospace">telemetry · status →</text>
+  <text x="1000" y="476" font-size="10" font-weight="500" text-anchor="end" fill="#52525b" font-family="'JetBrains Mono','Consolas',monospace">← control</text>
+
+  <line x1="40" y1="725" x2="1160" y2="725" stroke="#e4e4e7"/>
+  <text x="40" y="745" font-size="10" fill="#a1a1aa">
+    <tspan font-weight="500" fill="#52525b">→</tspan> публикация / прямой поток данных
+    <tspan dx="20" font-weight="500" fill="#52525b">⇢</tspan> подписка / обратный канал
+  </text>
+  <text x="1160" y="745" text-anchor="end" font-size="10" font-style="italic" fill="#a1a1aa">Рис. 1.1 · HELIOS v2.4</text>
+</svg>

@@ -1,4 +1,4 @@
-import { Wifi, WifiOff, Cpu, Radio, Sun } from 'lucide-react';
+import { Wifi, WifiOff, Cpu, Radio, Sun, type LucideIcon } from 'lucide-react';
 import clsx from 'clsx';
 
 interface Props {
@@ -17,7 +17,7 @@ function StatusBadge({
   ok: boolean;
   labelOn: string;
   labelOff: string;
-  Icon: React.ComponentType<{ size?: number }>;
+  Icon: LucideIcon;
 }) {
   return (
     <div

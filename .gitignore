@@ -29,3 +29,13 @@ project.zip
 serial.log
 *.bin
 *.elf
+
+# TypeScript incremental build cache
+*.tsbuildinfo
+
+# Windows: `bun build --outfile=/dev/null` создаёт файл "nul"
+nul
+
+# Report rendering preview artifacts
+report/diagrams/*_preview.png
+report/screenshots/*

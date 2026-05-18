@@ -1,0 +1,13 @@
+{
+  "name": "helios-tools",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Fake HELIOS firmware simulator + dev probes.",
+  "scripts": {
+    "fake": "node fake-helios.mjs"
+  },
+  "dependencies": {
+    "mqtt": "^5.10.0"
+  }
+}

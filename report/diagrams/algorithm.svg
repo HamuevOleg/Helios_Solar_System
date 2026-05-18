@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1280" font-family="'Inter','Segoe UI',Helvetica,Arial,sans-serif">
+  <defs>
+    <filter id="block-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="1"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.06"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#3f3f46"/>
+    </marker>
+    <style>
+      .start { fill: #f0fdf4; stroke: #059669; stroke-width: 1.5; }
+      .proc  { fill: #ffffff; stroke: #d4d4d8; stroke-width: 1.25; }
+      .io    { fill: #fff7ed; stroke: #ea580c; stroke-width: 1.25; }
+      .cond  { fill: #fefce8; stroke: #ca8a04; stroke-width: 1.25; }
+      .loop  { fill: #eff6ff; stroke: #2563eb; stroke-width: 1.5; }
+      .tx-strong { font-size: 13px; font-weight: 600; fill: #18181b; }
+      .tx-body   { font-size: 11.5px; fill: #18181b; }
+      .tx-sub    { font-size: 10.5px; fill: #71717a; }
+      .tx-tag    { font-size: 9.5px; font-weight: 700; fill: #a1a1aa; letter-spacing: 0.08em; }
+      .tx-yn     { font-size: 10.5px; font-weight: 700; fill: #52525b; }
+      .arrow     { fill: none; stroke: #3f3f46; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect width="900" height="1280" fill="#fbfbfb"/>
+
+  <text x="450" y="46" text-anchor="middle" font-size="22" font-weight="700" fill="#18181b" letter-spacing="-0.02em">
+    Алгоритм работы прошивки HELIOS
+  </text>
+  <text x="450" y="68" text-anchor="middle" font-size="11" fill="#71717a">
+    setup + основной цикл + асинхронные MQTT-команды
+  </text>
+
+  <!-- START -->
+  <ellipse cx="450" cy="110" rx="80" ry="22" class="start" filter="url(#block-shadow)"/>
+  <text x="450" y="115" text-anchor="middle" class="tx-strong" fill="#15803d">START / boot</text>
+  <path d="M 450 132 L 450 158" class="arrow" marker-end="url(#arr2)"/>
+
+  <!-- Init Serial -->
+  <rect x="295" y="160" width="310" height="56" rx="6" class="proc" filter="url(#block-shadow)"/>
+  <text x="450" y="183" text-anchor="middle" class="tx-strong">Serial.begin(115200)</text>
+  <text x="450" y="202" text-anchor="middle" class="tx-sub">баннер: «HELIOS v2.4 — full firmware online»</text>
+  <path d="M 450 216 L 450 240" class="arrow" marker-end="url(#arr2)"/>
+
+  <!-- sensorsInit -->
+  <rect x="295" y="242" width="310" height="56" rx="6" class="proc" filter="url(#block-shadow)"/>
+  <text x="450" y="265" text-anchor="middle" class="tx-strong">sensorsInit()</text>
+  <text x="450" y="284" text-anchor="middle" class="tx-sub">4 × analogRead на GPIO34, 35, 32, 33</text>
+  <path d="M 450 298 L 450 322" class="arrow" marker-end="url(#arr2)"/>
+
+  <!-- trackerInit -->
+  <rect x="295" y="324" width="310" height="56" rx="6" class="proc" filter="url(#block-shadow)"/>
+  <text x="450" y="347" text-anchor="middle" class="tx-strong">trackerInit()</text>
+  <text x="450" y="366" text-anchor="middle" class="tx-sub">сервопривод az на GPIO25, el на GPIO26 (60 Hz)</text>
+  <path d="M 450 380 L 450 404" class="arrow" marker-end="url(#arr2)"/>
+
+  <!-- networkInit (I/O) -->
+  <polygon points="318,406 622,406 600,464 296,464" class="io" filter="url(#block-shadow)"/>
+  <text x="459" y="430" text-anchor="middle" class="tx-strong">networkInit(handleControl)</text>
+  <text x="459" y="450" text-anchor="middle" class="tx-sub">WiFi STA → Wokwi-GUEST · подключение PubSubClient к HiveMQ</text>
+  <path d="M 458 464 L 458 490" class="arrow" marker-end="url(#arr2)"/>
+
+  <!-- Main loop banner -->
+  <rect x="320" y="492" width="260" height="44" rx="22" class="loop" filter="url(#block-shadow)"/>
+  <text x="450" y="519" text-anchor="middle" class="tx-strong" fill="#1d4ed8">Главный цикл (loop)</text>
+  <path d="M 450 536 L 450 564" class="arrow" marker-end="url(#arr2)"/>
+
+  <!-- networkLoop() always -->
+  <rect x="295" y="566" width="310" height="50" rx="6" class="proc" filter="url(#block-shadow)"/>
+  <text x="450" y="588" text-anchor="middle" class="tx-strong">networkLoop()</text>
+  <text x="450" y="606" text-anchor="middle" class="tx-sub">keepalive MQTT · приём входящих команд</text>
+  <path d="M 450 616 L 450 644" class="arrow" marker-end="url(#arr2)"/>
+
+  <!-- Decision 1: loop_period -->
+  <polygon points="450,644 590,704 450,764 310,704" class="cond" filter="url(#block-shadow)"/>
+  <text x="450" y="700" text-anchor="middle" class="tx-strong">прошло</text>
+  <text x="450" y="718" text-anchor="middle" class="tx-strong">LOOP_DELAY_MS ?</text>
+
+  <!-- YES branch: sensorsRead + trackerUpdate -->
+  <text x="600" y="700" class="tx-yn">YES</text>
+  <path d="M 590 704 L 650 704 L 650 668 L 740 668" class="arrow" marker-end="url(#arr2)"/>
+  <rect x="740" y="644" width="140" height="64" rx="6" class="proc" filter="url(#block-shadow)"/>
+  <text x="810" y="668" text-anchor="middle" class="tx-body" font-weight="600">sensorsRead +</text>
+  <text x="810" y="684" text-anchor="middle" class="tx-body" font-weight="600">computeDiff +</text>
+  <text x="810" y="700" text-anchor="middle" class="tx-body" font-weight="600">trackerUpdate</text>
+  <path d="M 740 690 L 650 690 L 650 738 L 590 738" class="arrow"/>
+
+  <text x="438" y="784" class="tx-yn">NO</text>
+  <path d="M 450 764 L 450 792" class="arrow" marker-end="url(#arr2)"/>
+
+  <!-- Decision 2: telemetry_period AND connected -->
+  <polygon points="450,792 590,852 450,912 310,852" class="cond" filter="url(#block-shadow)"/>
+  <text x="450" y="848" text-anchor="middle" class="tx-strong">прошло TELEMETRY_PERIOD</text>
+  <text x="450" y="866" text-anchor="middle" class="tx-strong">и MQTT online ?</text>
+
+  <text x="600" y="848" class="tx-yn">YES</text>
+  <path d="M 590 852 L 650 852 L 650 820 L 740 820" class="arrow" marker-end="url(#arr2)"/>
+  <rect x="740" y="796" width="140" height="50" rx="6" class="io" filter="url(#block-shadow)"/>
+  <text x="810" y="818" text-anchor="middle" class="tx-body" font-weight="600">telemetryPublish()</text>
+  <text x="810" y="834" text-anchor="middle" class="tx-sub">JSON via MQTT</text>
+  <path d="M 740 826 L 650 826 L 650 886 L 590 886" class="arrow"/>
+
+  <text x="438" y="932" class="tx-yn">NO</text>
+  <path d="M 450 912 L 450 940" class="arrow" marker-end="url(#arr2)"/>
+
+  <!-- Decision 3: serial_period -->
+  <polygon points="450,940 590,1000 450,1060 310,1000" class="cond" filter="url(#block-shadow)"/>
+  <text x="450" y="996" text-anchor="middle" class="tx-strong">прошло</text>
+  <text x="450" y="1014" text-anchor="middle" class="tx-strong">SERIAL_PERIOD (2с) ?</text>
+
+  <text x="600" y="996" class="tx-yn">YES</text>
+  <path d="M 590 1000 L 650 1000 L 650 968 L 740 968" class="arrow" marker-end="url(#arr2)"/>
+  <rect x="740" y="944" width="140" height="50" rx="6" class="proc" filter="url(#block-shadow)"/>
+  <text x="810" y="966" text-anchor="middle" class="tx-body" font-weight="600">Serial.printf</text>
+  <text x="810" y="982" text-anchor="middle" class="tx-sub">diag-лог</text>
+  <path d="M 740 974 L 650 974 L 650 1034 L 590 1034" class="arrow"/>
+
+  <text x="438" y="1080" class="tx-yn">NO</text>
+  <path d="M 450 1060 L 450 1090" class="arrow" marker-end="url(#arr2)"/>
+
+  <!-- back to loop -->
+  <rect x="350" y="1092" width="200" height="40" rx="6" class="proc" filter="url(#block-shadow)"/>
+  <text x="450" y="1116" text-anchor="middle" class="tx-body" font-weight="600">return → loop()</text>
+
+  <!-- loop-back arrow (left side) -->
+  <path d="M 350 1112 L 220 1112 L 220 514 L 320 514" class="arrow" marker-end="url(#arr2)"/>
+  <text x="234" y="860" class="tx-sub" font-style="italic">цикл</text>
+
+  <!-- ============ ASYNC: control handler (bottom strip) ============ -->
+  <line x1="40" y1="1162" x2="860" y2="1162" stroke="#e4e4e7"/>
+  <text x="40" y="1186" class="tx-tag">АСИНХРОННЫЕ КОМАНДЫ ОТ MQTT · telemetryHandleControl</text>
+
+  <rect x="40" y="1198" width="260" height="68" rx="6" class="io" filter="url(#block-shadow)"/>
+  <text x="56" y="1220" class="tx-strong" font-size="11">setMode → AUTO/MANUAL/PARKED</text>
+  <text x="56" y="1238" class="tx-sub">trackerSetMode(value)</text>
+  <text x="56" y="1254" class="tx-sub">PARKED: сервы в безопасное положение</text>
+
+  <rect x="320" y="1198" width="260" height="68" rx="6" class="io" filter="url(#block-shadow)"/>
+  <text x="336" y="1220" class="tx-strong" font-size="11">setServo {az?, el?}</text>
+  <text x="336" y="1238" class="tx-sub">trackerSetTargetAz/El(clamped)</text>
+  <text x="336" y="1254" class="tx-sub">implies MODE=MANUAL</text>
+
+  <rect x="600" y="1198" width="260" height="68" rx="6" class="io" filter="url(#block-shadow)"/>
+  <text x="616" y="1220" class="tx-strong" font-size="11">setDeadzone value</text>
+  <text x="616" y="1238" class="tx-sub">trackerSetDeadzone(value)</text>
+  <text x="616" y="1254" class="tx-sub">0..500, ширина зоны нечувствительности</text>
+</svg>

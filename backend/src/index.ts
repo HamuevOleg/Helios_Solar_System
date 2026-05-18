@@ -4,6 +4,8 @@
 
 import { Elysia, t } from 'elysia';
 import { cors } from '@elysiajs/cors';
+import { staticPlugin } from '@elysiajs/static';
+import { existsSync } from 'node:fs';
 import {
   connectMqtt,
   publishControl,
@@ -15,6 +17,7 @@ import {
 import type { ServerToClient, ClientToServer } from './types';
 
 const PORT = Number(process.env.PORT ?? 8787);
+const STATIC_DIR = process.env.STATIC_DIR ?? '../frontend/dist';
 
 // ── Реестр подключённых WebSocket-клиентов
 type WsClient = { send: (data: string) => void };
@@ -41,7 +44,9 @@ connectMqtt({
 // ── Elysia-приложение
 const app = new Elysia()
   .use(cors())
-  .get('/', () => ({
+  // Info-эндпоинт переехал с / на /api/info — корень оставлен под
+  // index.html фронтенда (static plugin цепляется ниже).
+  .get('/api/info', () => ({
     name: 'helios-backend',
     version: '1.0.0',
     deviceId: getDeviceId(),
@@ -85,8 +90,24 @@ const app = new Elysia()
       }
       publishControl(cmd);
     },
-  })
-  .listen(PORT);
+  });
+
+// В production (или просто если рядом лежит frontend/dist) — раздаём
+// собранный фронт с того же порта. В dev это не нужно: Vite держит свой
+// сервер на 5173 и проксирует /ws → 8787.
+if (existsSync(STATIC_DIR)) {
+  console.log(`[http] serving static frontend from ${STATIC_DIR}`);
+  // /assets/* и /vite.svg, /metronome.svg и т.п. — через static-плагин.
+  app.use(staticPlugin({ assets: STATIC_DIR, prefix: '', alwaysStatic: false }));
+  // Корень и любой не-API маршрут (SPA-fallback) — отдают index.html.
+  app.get('/', () => new Response(Bun.file(`${STATIC_DIR}/index.html`), {
+    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+  }));
+} else {
+  console.log(`[http] no static dir at ${STATIC_DIR} — UI served separately`);
+}
+
+app.listen(PORT);
 
 console.log(`╔════════════════════════════════════════════════╗`);
 console.log(`║  HELIOS backend                                 ║`);

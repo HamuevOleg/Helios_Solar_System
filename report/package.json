@@ -1,0 +1,12 @@
+{
+  "name": "helios-report",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node generate.js"
+  },
+  "dependencies": {
+    "docx": "^9.5.0",
+    "sharp": "^0.34.0"
+  }
+}

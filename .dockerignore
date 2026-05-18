@@ -1,0 +1,14 @@
+# Don't ship dev junk into the build context.
+**/node_modules
+**/dist
+**/.vite
+**/.env
+**/.env.local
+project.zip
+*.docx
+*.log
+.git
+.gitignore
+report-gen/
+Raport_*.docx
+firmware/build
