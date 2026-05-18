@@ -31,8 +31,37 @@
 | `firmware/`  | Arduino C++ для ESP32: `sketch.ino`, `config.h`, `sensors.*`, `tracker.*`, `network.*`, `telemetry.*`, `diagram.json`, `libraries.txt`. |
 | `backend/`   | Bun + ElysiaJS. MQTT-клиент + WebSocket-сервер.              |
 | `frontend/`  | React + Vite + Tailwind + react-three-fiber + Recharts.      |
+| `tools/`     | `fake-helios.mjs` — Node-симулятор устройства для демо без Wokwi (виртуальное «солнце», LDR-матрица, реакция на control-команды). |
+| `report/`    | Генератор `report.docx` + защитного `guide.pdf` (docx-js + sharp + pdfmake). Готовые рендеры лежат там же. |
+| `report-gen/`| Альтернативный генератор отчёта (классический, `gen.mjs` + `gen-defence.mjs`) — оставлен для совместимости. |
 
-## Запуск (локально)
+## Быстрый старт через Docker (рекомендую)
+
+Один контейнер поднимает бэк + фронт + фейк-устройство. Не нужны ни Bun, ни npm, ни Wokwi — UI оживёт мгновенно с симулированными данными.
+
+```bash
+docker build -t helios:latest .
+docker run -d --name helios -p 8787:8787 --restart unless-stopped helios:latest
+# Открой http://localhost:8787 — должно быть видно 3D-модель, графики, телеметрию
+```
+
+Управление:
+
+```bash
+docker logs -f helios       # хвост логов
+docker stop helios          # выключить
+docker start helios         # включить обратно
+docker rm -f helios         # снести
+```
+
+Если хочешь чтоб UI слушал не фейк, а **реальную прошивку из Wokwi**:
+
+```bash
+docker exec helios pkill -f fake-helios   # прибить симулятор
+# теперь запусти прошивку в Wokwi или wokwi-cli — UI подцепится по тем же MQTT-топикам
+```
+
+## Запуск (локально, для разработки)
 
 Нужен **[Bun](https://bun.sh)** (любая свежая версия).
 
@@ -87,6 +116,26 @@ bun run dev
 { "cmd": "setDeadzone", "value": 80 }
 ```
 
+## Отчёт и шпаргалка для защиты
+
+В папке `report/` лежат два готовых документа:
+
+| Файл               | Что внутри                                                      |
+|--------------------|-----------------------------------------------------------------|
+| `report.docx`      | Полный академический отчёт по проекту (4 главы + 8 приложений с полным кодом). Times New Roman 12pt, 1.5 интервал, A4. |
+| `guide.pdf`        | Шпаргалка для устной защиты: что говорить, навигация по отчёту, ключевые куски кода, готовые ответы на 13 типичных вопросов. |
+
+Пересобрать:
+
+```bash
+cd report
+npm install
+node generate.js        # → report.docx (с встроенными SVG-диаграммами и скринами)
+node generate-guide.js  # → guide.pdf
+```
+
+Скриншоты для отчёта лежат в `report/screenshots/`. Если нужно поменять — закинь новый файл с тем же именем и пересобери.
+
 ## Этапы сборки
 
 1. ✅ Wokwi-схема + минимальный sketch
@@ -97,10 +146,14 @@ bun run dev
 6. ✅ React + Vite + Tailwind — скелет дашборда
 7. ✅ Графики + 3D-сцена + контрол
 8. ✅ Полировка + LWT + README
+9. ✅ Single-image Docker-сборка
+10. ✅ Fake-firmware симулятор для демо без Wokwi
+11. ✅ Headless-валидация через `wokwi-cli`
 
 ## Технологии
 
-- **Симуляция:** Wokwi (ESP32 DevKit-C v4)
+- **Симуляция:** Wokwi (ESP32 DevKit-C v4) + опционально `wokwi-cli` для headless-режима
 - **Firmware:** C++ (Arduino), ESP32Servo, PubSubClient, ArduinoJson
-- **Backend:** Bun runtime, Elysia HTTP/WS, `mqtt` (Node-compatible)
+- **Backend:** Bun runtime, Elysia HTTP/WS, `mqtt` (Node-compatible), `@elysiajs/static`
 - **Frontend:** React 18, Vite, TypeScript, Tailwind CSS, `@react-three/fiber`, Recharts, Lucide
+- **DevOps:** Docker (multi-stage Bun + Node alpine), single-image-демо

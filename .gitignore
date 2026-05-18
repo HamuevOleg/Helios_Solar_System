@@ -36,6 +36,5 @@ serial.log
 # Windows: `bun build --outfile=/dev/null` создаёт файл "nul"
 nul
 
-# Report rendering preview artifacts
+# Report rendering preview artifacts (но сами скриншоты комитим — они часть отчёта)
 report/diagrams/*_preview.png
-report/screenshots/*
